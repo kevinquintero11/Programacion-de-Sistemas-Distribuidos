@@ -7,6 +7,32 @@
 
 #define PUERTO_SC 5000
 #define BUFFSIZE 1024
+#define CACHE_SIZE 100
+
+typedef struct {
+    char clave[100];
+    char respuesta[BUFFSIZE];
+} CacheEntry;
+
+CacheEntry cache[CACHE_SIZE];
+int cache_count = 0;
+
+char* buscar_cache(const char* clave) {
+    for(int i = 0; i < cache_count; i++) {
+        if(strcmp(cache[i].clave, clave) == 0) {
+            return cache[i].respuesta;
+        }
+    }
+    return NULL;
+}
+
+void guardar_cache(const char* clave, const char* respuesta) {
+    if(cache_count < CACHE_SIZE) {
+        strncpy(cache[cache_count].clave, clave, sizeof(cache[cache_count].clave)-1);
+        strncpy(cache[cache_count].respuesta, respuesta, sizeof(cache[cache_count].respuesta)-1);
+        cache_count++;
+    }
+}
 
 int main(int argc, char *argv[]){
 
@@ -15,7 +41,7 @@ int main(int argc, char *argv[]){
     char buffer[BUFFSIZE];
     char signo[50], fecha[50];
 
-    if(argc != 3){ // si no recibe 3 argumentos (programa, signo, fecha)
+    if(argc != 3) {
         fprintf(stderr, "Entrada esperada: %s <signo> <dd/mm/yy>\n", argv[0] );
         fprintf(stderr, "Ejemplo: %s leo <12/08/1999>\n", argv[0] );
         exit(1);
@@ -45,7 +71,18 @@ int main(int argc, char *argv[]){
      printf("Conectado al Servidor Central\n");
     
     /* Preparar mensaje: signo|fecha */
-    snprintf(buffer, BUFFSIZE, "%s|%s", signo, fecha);
+    char clave[100];
+    snprintf(clave, sizeof(clave), "%s|%s", signo, fecha);
+
+    char* respuesta_cache = buscar_cache(clave);
+
+    if(respuesta_cache != NULL){
+        printf("\n===== RESULTADOS (CACHE) =====\n");
+        printf("%s\n", respuesta_cache);
+        printf("=============================\n");
+        close(sock_fd);
+        return 0;
+    }
 
     /* Enviar consulta al SC */
     if (send(sock_fd, buffer, strlen(buffer), 0) < 0) {
@@ -61,6 +98,7 @@ int main(int argc, char *argv[]){
         perror("Error al recibir respuesta");
         exit(1);
     }
+    guardar_cache(clave, buffer);
 
     /* Mostrar resultados al usuario */
     printf("\n===== RESULTADOS =====\n");
