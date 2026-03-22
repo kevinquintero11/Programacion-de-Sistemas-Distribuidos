@@ -135,6 +135,7 @@ void mostrar_configuracion(const Config *cfg) {
         printf("Predicciones cargadas: %d\n", cfg->num_predicciones);
     }
     printf("======================\n");
+    fflush(stdout);
 }
 
 const char* obtener_prediccion(const Config *cfg, const char *signo) {

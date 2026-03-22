@@ -43,10 +43,11 @@ void* cliente(void *arg) {
         char signo[50];
         char fecha[50];
 
-        int idx = rand() % cfg.num_signos;
+        int idx_signo = rand() % cfg.num_signos;
+        int idx_fecha = rand() % 5;
 
-        strcpy(signo, cfg.signos[idx]);
-        strcpy(fecha, fechas[idx]);
+        strcpy(signo, cfg.signos[idx_signo]);
+        strcpy(fecha, fechas[idx_fecha]);
 
         sock_fd = socket(AF_INET, SOCK_STREAM, 0);
         if (sock_fd < 0) {
@@ -75,10 +76,11 @@ void* cliente(void *arg) {
         printf("\n[HILO %d] Consulta %d\n", id, i+1);
         printf("Signo: %s Fecha: %s\n", signo, fecha);
         printf("Respuesta:\n%s\n", buffer);
+        fflush(stdout);
 
         close(sock_fd);
 
-        usleep(200000);
+        usleep(100000);
     }
 
     free(buffer);
@@ -113,6 +115,7 @@ int main() {
     }
 
     printf("\nTEST FINALIZADO\n");
+    fflush(stdout);
 
     return 0;
 }
