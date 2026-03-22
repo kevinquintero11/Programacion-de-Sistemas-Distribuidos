@@ -5,12 +5,11 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <pthread.h>
+#include "config.h"
 
-#define PUERTO_SH 5001
-#define BUFFSIZE 1024
+#define CONFIG_FILE "config.conf"
 #define NUM_PREDICCIONES 10
 
-/* Array con predicciones aleatorias del horóscopo */
 const char *predicciones[] = {
     "Hoy será un día excepcional para ti. Las estrellas alinean tu camino hacia el éxito.",
     "Un encuentro inesperado cambiará tu perspectiva sobre la vida. Mantén los ojos abiertos.",
@@ -24,29 +23,34 @@ const char *predicciones[] = {
     "El amor llama a tu puerta. No temas abrirla y déjate llevar."
 };
 
+Config cfg;
+
 void *manejar_cliente(void *arg){
     int client_fd = *((int *)arg);
     free(arg);
 
-    char buffer[BUFFSIZE];
+    char *buffer = malloc(cfg.tamano_buffer);
     char signo[50];
     int index_prediccion;
+    
+    if (!buffer) {
+        close(client_fd);
+        return NULL;
+    }
 
-    memset(buffer, 0, BUFFSIZE);
+    memset(buffer, 0, cfg.tamano_buffer);
 
-    /* Leer los datos que envia el cliente */
-    if (recv(client_fd, buffer, BUFFSIZE - 1, 0) > 0) {
+    if (recv(client_fd, buffer, cfg.tamano_buffer - 1, 0) > 0) {
         strncpy(signo, buffer, sizeof(signo) - 1);
         
-        /* Seleccionar predicción aleatoria usando el signo como semilla */
         srand(time(NULL) + strlen(signo));
         index_prediccion = rand() % NUM_PREDICCIONES;
         
-        /* Enviar predicción al cliente */
-        snprintf(buffer, BUFFSIZE, "Horóscopo %s: %s", signo, predicciones[index_prediccion]);
+        snprintf(buffer, cfg.tamano_buffer, "Horóscopo %s: %s", signo, predicciones[index_prediccion]);
         send(client_fd, buffer, strlen(buffer), 0);
     }
 
+    free(buffer);
     return NULL;
 }
 
@@ -57,34 +61,36 @@ int main(){
     socklen_t client_len;
     pthread_t hilo;
 
-    /* Crear socket TCP */
+    if (cargar_configuracion(CONFIG_FILE, &cfg) < 0) {
+        fprintf(stderr, "Error al cargar configuracion. Usando valores por defecto.\n");
+    }
+    
+    mostrar_configuracion(&cfg);
+
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd < 0) {
         perror("Error al crear socket");
         exit(1);
     }
 
-    /* Configurar direccion del servidor*/
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY; 
-    server_addr.sin_port = htons(PUERTO_SH);
+    server_addr.sin_port = htons(cfg.puerto_horoscopo);
 
-    /* Vincular socket al puerto */
     if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         perror("Error al vincular socket");
         close(server_fd);
         exit(1);
     }
 
-    /* Escucha conexiones (hasta 5 en cola) */
     if (listen(server_fd, 5) < 0) {
         perror("Error al escuchar");
         close(server_fd);
         exit(1);
     }
 
-    printf("Servidor de Horóscopo (SH) escuchando en puerto %d\n", PUERTO_SH);
+    printf("Servidor de Horóscopo (SH) escuchando en %s:%d\n", cfg.ip_horoscopo, cfg.puerto_horoscopo);
 
     while (1) {
         client_len = sizeof(client_addr);
@@ -95,7 +101,6 @@ int main(){
             continue;
         }
         
-        /* Crear hilo para atender al cliente */
         int *client_fd_ptr = malloc(sizeof(int));
         *client_fd_ptr = client_fd;
         
@@ -105,7 +110,6 @@ int main(){
             free(client_fd_ptr);
         }
         
-        /* Desvincular hilo para que no espere su terminacion */
         pthread_detach(hilo);
     }
     
