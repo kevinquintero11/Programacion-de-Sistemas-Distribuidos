@@ -3,7 +3,7 @@
 
 #define MAX_LINEA 256
 #define MAX_SIGNOS 20
-#define MAX_PREDICCIONES 50
+#define MAX_PREDICCIONES 20
 
 typedef struct {
     char ip_central[64];
@@ -22,9 +22,13 @@ typedef struct {
     
     char signos[MAX_SIGNOS][50];
     int num_signos;
+    
+    char predicciones[MAX_SIGNOS][256];
+    int num_predicciones;
 } Config;
 
 int cargar_configuracion(const char *archivo, Config *cfg);
 void mostrar_configuracion(const Config *cfg);
+const char* obtener_prediccion(const Config *cfg, const char *signo);
 
 #endif

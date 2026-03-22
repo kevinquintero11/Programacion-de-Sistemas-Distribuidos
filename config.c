@@ -38,6 +38,22 @@ static void parsear_signos(const char *valor, Config *cfg) {
     }
 }
 
+static void parsear_prediccion(const char *clave, const char *valor, Config *cfg) {
+    if (strncmp(clave, "prediccion_", 11) == 0) {
+        const char *signo = clave + 11;
+        for (int i = 0; i < cfg->num_signos; i++) {
+            if (strcasecmp(signo, cfg->signos[i]) == 0) {
+                strncpy(cfg->predicciones[i], valor, 255);
+                cfg->predicciones[i][255] = '\0';
+                if (i >= cfg->num_predicciones) {
+                    cfg->num_predicciones = i + 1;
+                }
+                return;
+            }
+        }
+    }
+}
+
 int cargar_configuracion(const char *archivo, Config *cfg) {
     FILE *fp = fopen(archivo, "r");
     if (!fp) {
@@ -91,6 +107,8 @@ int cargar_configuracion(const char *archivo, Config *cfg) {
                 cfg->num_hilos_test = atoi(valor);
             } else if (strcmp(clave, "consultas_por_hilo") == 0) {
                 cfg->consultas_por_hilo = atoi(valor);
+            } else {
+                parsear_prediccion(clave, valor, cfg);
             }
         }
     }
@@ -113,5 +131,20 @@ void mostrar_configuracion(const Config *cfg) {
         }
         printf("\n");
     }
+    if (cfg->num_predicciones > 0) {
+        printf("Predicciones cargadas: %d\n", cfg->num_predicciones);
+    }
     printf("======================\n");
+}
+
+const char* obtener_prediccion(const Config *cfg, const char *signo) {
+    for (int i = 0; i < cfg->num_signos; i++) {
+        if (strcasecmp(signo, cfg->signos[i]) == 0) {
+            if (strlen(cfg->predicciones[i]) > 0) {
+                return cfg->predicciones[i];
+            }
+            return "Prediccion no disponible para este signo.";
+        }
+    }
+    return "Signo no reconocido.";
 }
