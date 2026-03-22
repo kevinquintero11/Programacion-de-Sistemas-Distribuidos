@@ -105,7 +105,7 @@ int main(){
             free(client_fd_ptr);
         }
         
-        /* Desvinclar hilo para que no espere su terminacion */
+        /* Desvincular hilo para que no espere su terminacion */
         pthread_detach(hilo);
     }
     

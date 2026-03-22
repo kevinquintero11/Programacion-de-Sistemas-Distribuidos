@@ -9,7 +9,42 @@
 #define PUERTO_SC 5000 /* Puerto del Servidor Central */
 #define PUERTO_SH 5001 /* Puerto del Servidor de Horóscopo */
 #define PUERTO_SP 5002 /* Puerto del Servidor de Clima */
-#define BUFSIZE 1024	 /* Tamaño del buffer */
+#define BUFFSIZE 1024	 /* Tamaño del buffer */
+#define CACHE_SIZE 100
+pthread_mutex_t cache_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+typedef struct {
+    char clave[100];
+    char respuesta[BUFFSIZE];
+} CacheEntry;
+
+CacheEntry cache[CACHE_SIZE];
+int cache_count = 0;
+
+
+
+char* buscar_cache(const char* clave) {
+	pthread_mutex_lock(&cache_mutex);
+    printf("clave recibida: %s\n", clave);
+    for(int i = 0; i < cache_count; i++) {
+        printf("clave %d: %s\n", i, cache[i].clave);
+        if(strcmp(cache[i].clave, clave) == 0) {
+            return cache[i].respuesta;
+        }
+    }
+	pthread_mutex_unlock(&cache_mutex);
+    return NULL;
+}
+
+void guardar_cache(const char* clave, const char* respuesta) {
+	pthread_mutex_lock(&cache_mutex);
+    if(cache_count < CACHE_SIZE) {
+        strncpy(cache[cache_count].clave, clave, sizeof(cache[cache_count].clave)-1);
+        strncpy(cache[cache_count].respuesta, respuesta, sizeof(cache[cache_count].respuesta)-1);
+        cache_count++;
+    }
+	pthread_mutex_unlock(&cache_mutex);
+}
 
 
 int conectar_y_consultar(const char *ip, int puerto, const char *dato, char *respuesta) {
@@ -40,8 +75,8 @@ int conectar_y_consultar(const char *ip, int puerto, const char *dato, char *res
 	}
 
 	/* Recibir respuesta */
-	memset(respuesta, 0, BUFSIZE);
-	recv(sockfd, respuesta, BUFSIZE - 1, 0);
+	memset(respuesta, 0, BUFFSIZE);
+	recv(sockfd, respuesta, BUFFSIZE - 1, 0);
 
 	close(sockfd);
 	return 0;
@@ -51,17 +86,32 @@ void* manejar_cliente(void *arg){
     int client_fd = *((int *)arg);
     free(arg);
 
-    char buffer[BUFSIZE];
+    char buffer[BUFFSIZE];
     char signo[50], fecha[50];
-	char horoscopo[BUFSIZE], clima[BUFSIZE];
-    char resultado_final[BUFSIZE * 2];
+	char horoscopo[BUFFSIZE], clima[BUFFSIZE];
+    char resultado_final[BUFFSIZE * 2];
 
     /* Recibir consulta del cliente */
-	memset(buffer, 0, BUFSIZE);
-	if (recv(client_fd, buffer, BUFSIZE - 1, 0) <= 0) {
+	memset(buffer, 0, BUFFSIZE);
+	if (recv(client_fd, buffer, BUFFSIZE - 1, 0) <= 0) {
 		close(client_fd);
 		return NULL;
 	}
+
+	char clave[100];
+	char claveOriginal[100];
+	strncpy(clave, buffer, sizeof(clave) - 1);
+	
+	char* respuesta_cache = buscar_cache(clave);
+
+    if(respuesta_cache != NULL){
+        printf("\n===== RESULTADOS (CACHE) =====\n");
+        printf("%s\n", respuesta_cache);
+        printf("=============================\n");
+		send(client_fd, respuesta_cache, strlen(respuesta_cache), 0);
+        close(client_fd);
+        return 0;
+    }
 
     char *token = strtok(buffer, "|");
 	if (token){
@@ -73,7 +123,7 @@ void* manejar_cliente(void *arg){
         strncpy(fecha, token, sizeof(fecha) - 1);
     }
 
-    printf("Consulta recibida: Signo=%s, Fecha=%s\n", signo, fecha);
+	printf("Consulta recibida: Signo=%s, Fecha=%s\n", signo, fecha);
 
     /* Consultar al Servidor de Horóscopo */
     printf("Consultando al Servidor de Horóscopo...\n");
@@ -90,8 +140,12 @@ void* manejar_cliente(void *arg){
     /* Combinar resultados */
     snprintf(resultado_final, sizeof(resultado_final), "%s\n%s", horoscopo, clima);
 	
+	printf("respuesta SC: %s\n", resultado_final);
+
     /* Enviar resultado al cliente */
 	send(client_fd, resultado_final, strlen(resultado_final), 0);
+
+	guardar_cache(clave, resultado_final);
 
     /* Cerrar conexión */
 	close(client_fd);

@@ -2,12 +2,16 @@
 
 CC = gcc
 CFLAGS = -Wall -pthread -g
-TARGETS = cliente servidor_central servidor_horoscopo servidor_clima
+
+TARGETS = cliente cliente_test servidor_central servidor_horoscopo servidor_clima
 
 all: $(TARGETS)
 
 cliente: cliente.c
 	$(CC) $(CFLAGS) -o cliente cliente.c
+
+cliente_test: cliente_test.c
+	$(CC) $(CFLAGS) -o cliente_test cliente_test.c
 
 servidor_central: servidor_central.c
 	$(CC) $(CFLAGS) -o servidor_central servidor_central.c

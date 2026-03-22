@@ -1,0 +1,302 @@
+
+[HILO 1] Consulta 1
+Signo: tauro Fecha: 12/03/2002
+Respuesta:
+Horóscopo tauro: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 12/03/2002: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 5] Consulta 1
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 9] Consulta 1
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 4] Consulta 1
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 10] Consulta 1
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 2] Consulta 1
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 6] Consulta 1
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 3] Consulta 1
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 7] Consulta 1
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 8] Consulta 1
+Signo: leo Fecha: 10/01/2000
+Respuesta:
+Horóscopo leo: Hoy será un día excepcional para ti. Las estrellas alinean tu camino hacia el éxito.
+Clima 10/01/2000: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 5] Consulta 2
+Signo: leo Fecha: 10/01/2000
+Respuesta:
+Horóscopo leo: Hoy será un día excepcional para ti. Las estrellas alinean tu camino hacia el éxito.
+Clima 10/01/2000: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 1] Consulta 2
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 9] Consulta 2
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 4] Consulta 2
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 10] Consulta 2
+Signo: aries Fecha: 11/02/2001
+Respuesta:
+Horóscopo aries: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 11/02/2001: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 6] Consulta 2
+Signo: leo Fecha: 10/01/2000
+Respuesta:
+Horóscopo leo: Hoy será un día excepcional para ti. Las estrellas alinean tu camino hacia el éxito.
+Clima 10/01/2000: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 2] Consulta 2
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 3] Consulta 2
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 7] Consulta 2
+Signo: leo Fecha: 10/01/2000
+Respuesta:
+Horóscopo leo: Hoy será un día excepcional para ti. Las estrellas alinean tu camino hacia el éxito.
+Clima 10/01/2000: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 8] Consulta 2
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 1] Consulta 3
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 5] Consulta 3
+Signo: aries Fecha: 11/02/2001
+Respuesta:
+Horóscopo aries: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 11/02/2001: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 9] Consulta 3
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 4] Consulta 3
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 10] Consulta 3
+Signo: tauro Fecha: 12/03/2002
+Respuesta:
+Horóscopo tauro: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 12/03/2002: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 6] Consulta 3
+Signo: aries Fecha: 11/02/2001
+Respuesta:
+Horóscopo aries: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 11/02/2001: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 2] Consulta 3
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 3] Consulta 3
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 8] Consulta 3
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 7] Consulta 3
+Signo: aries Fecha: 11/02/2001
+Respuesta:
+Horóscopo aries: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 11/02/2001: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 5] Consulta 4
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 1] Consulta 4
+Signo: tauro Fecha: 12/03/2002
+Respuesta:
+Horóscopo tauro: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 12/03/2002: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 9] Consulta 4
+Signo: leo Fecha: 10/01/2000
+Respuesta:
+Horóscopo leo: Hoy será un día excepcional para ti. Las estrellas alinean tu camino hacia el éxito.
+Clima 10/01/2000: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 4] Consulta 4
+Signo: tauro Fecha: 12/03/2002
+Respuesta:
+Horóscopo tauro: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 12/03/2002: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 10] Consulta 4
+Signo: aries Fecha: 11/02/2001
+Respuesta:
+Horóscopo aries: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 11/02/2001: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 6] Consulta 4
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 3] Consulta 4
+Signo: aries Fecha: 11/02/2001
+Respuesta:
+Horóscopo aries: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 11/02/2001: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 2] Consulta 4
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 8] Consulta 4
+Signo: aries Fecha: 11/02/2001
+Respuesta:
+Horóscopo aries: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 11/02/2001: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 7] Consulta 4
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 5] Consulta 5
+Signo: tauro Fecha: 12/03/2002
+Respuesta:
+Horóscopo tauro: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 12/03/2002: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 9] Consulta 5
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 1] Consulta 5
+Signo: tauro Fecha: 12/03/2002
+Respuesta:
+Horóscopo tauro: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 12/03/2002: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 4] Consulta 5
+Signo: aries Fecha: 11/02/2001
+Respuesta:
+Horóscopo aries: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 11/02/2001: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 10] Consulta 5
+Signo: aries Fecha: 11/02/2001
+Respuesta:
+Horóscopo aries: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 11/02/2001: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 6] Consulta 5
+Signo: leo Fecha: 10/01/2000
+Respuesta:
+Horóscopo leo: Hoy será un día excepcional para ti. Las estrellas alinean tu camino hacia el éxito.
+Clima 10/01/2000: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 3] Consulta 5
+Signo: leo Fecha: 10/01/2000
+Respuesta:
+Horóscopo leo: Hoy será un día excepcional para ti. Las estrellas alinean tu camino hacia el éxito.
+Clima 10/01/2000: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 2] Consulta 5
+Signo: cancer Fecha: 13/04/2003
+Respuesta:
+Horóscopo cancer: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 13/04/2003: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+[HILO 8] Consulta 5
+Signo: virgo Fecha: 14/05/2004
+Respuesta:
+Horóscopo virgo: Tu energía está en su punto máximo. Es el momento perfecto para tomar decisiones importantes.
+Clima 14/05/2004: Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.
+
+[HILO 7] Consulta 5
+Signo: tauro Fecha: 12/03/2002
+Respuesta:
+Horóscopo tauro: Nuevas oportunidades aparecerán. Aprende a reconocerlas y aprovéchalas.
+Clima 12/03/2002: Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+
+TEST FINALIZADO
