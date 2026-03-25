@@ -3,7 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "config.h"
-#include "json.h"
 
 static void trim(char *str) {
     char *end;
@@ -14,7 +13,51 @@ static void trim(char *str) {
     *(end + 1) = 0;
 }
 
-int cargar_configuracion(const char *config_file, const char *signos_file, Config *cfg) {
+static int obtener_valor_int(FILE *fp, const char *key_buscado, int defecto) {
+    char linea[512];
+    rewind(fp);
+    
+    while (fgets(linea, sizeof(linea), fp)) {
+        trim(linea);
+        if (linea[0] == '\0' || linea[0] == '#') continue;
+        
+        char *eq = strchr(linea, '=');
+        if (eq) {
+            *eq = '\0';
+            trim(linea);
+            if (strcmp(linea, key_buscado) == 0) {
+                trim(eq + 1);
+                return atoi(eq + 1);
+            }
+        }
+    }
+    return defecto;
+}
+
+static void obtener_valor_string(FILE *fp, const char *key_buscado, char *dest, int tamano, const char *defecto) {
+    char linea[512];
+    strcpy(dest, defecto);
+    rewind(fp);
+    
+    while (fgets(linea, sizeof(linea), fp)) {
+        trim(linea);
+        if (linea[0] == '\0' || linea[0] == '#') continue;
+        
+        char *eq = strchr(linea, '=');
+        if (eq) {
+            *eq = '\0';
+            trim(linea);
+            if (strcmp(linea, key_buscado) == 0) {
+                trim(eq + 1);
+                strncpy(dest, eq + 1, tamano - 1);
+                dest[tamano - 1] = '\0';
+                return;
+            }
+        }
+    }
+}
+
+int cargar_configuracion(const char *config_file, const char *signos_file, const char *pronosticos_file, Config *cfg) {
     memset(cfg, 0, sizeof(Config));
     
     cfg->puerto_central = 5000;
@@ -29,27 +72,25 @@ int cargar_configuracion(const char *config_file, const char *signos_file, Confi
     strcpy(cfg->ip_horoscopo, "127.0.0.1");
     strcpy(cfg->ip_clima, "127.0.0.1");
     
-    char *json_str = json_read_file(config_file);
-    if (json_str) {
-        JsonObject *obj = json_parse_object(json_str);
-        if (obj) {
-            strncpy(cfg->ip_central, json_get_string(obj, "ip_servidor_central"), 63);
-            strncpy(cfg->ip_horoscopo, json_get_string(obj, "ip_servidor_horoscopo"), 63);
-            strncpy(cfg->ip_clima, json_get_string(obj, "ip_servidor_clima"), 63);
-            cfg->puerto_central = json_get_int(obj, "puerto_servidor_central", 5000);
-            cfg->puerto_horoscopo = json_get_int(obj, "puerto_servidor_horoscopo", 5001);
-            cfg->puerto_clima = json_get_int(obj, "puerto_servidor_clima", 5002);
-            cfg->tamano_cache = json_get_int(obj, "tamano_cache", 100);
-            cfg->tamano_buffer = json_get_int(obj, "tamano_buffer", 1024);
-            cfg->num_hilos_test = json_get_int(obj, "num_hilos_test", 10);
-            cfg->consultas_por_hilo = json_get_int(obj, "consultas_por_hilo", 5);
-            json_free_object(obj);
-        }
-        free(json_str);
+    FILE *fp = fopen(config_file, "r");
+    if (fp) {
+        obtener_valor_string(fp, "ip_servidor_central", cfg->ip_central, 64, "127.0.0.1");
+        obtener_valor_string(fp, "ip_servidor_horoscopo", cfg->ip_horoscopo, 64, "127.0.0.1");
+        obtener_valor_string(fp, "ip_servidor_clima", cfg->ip_clima, 64, "127.0.0.1");
+        
+        cfg->puerto_central = obtener_valor_int(fp, "puerto_servidor_central", 5000);
+        cfg->puerto_horoscopo = obtener_valor_int(fp, "puerto_servidor_horoscopo", 5001);
+        cfg->puerto_clima = obtener_valor_int(fp, "puerto_servidor_clima", 5002);
+        cfg->tamano_cache = obtener_valor_int(fp, "tamano_cache", 100);
+        cfg->tamano_buffer = obtener_valor_int(fp, "tamano_buffer", 1024);
+        cfg->num_hilos_test = obtener_valor_int(fp, "num_hilos", 10);
+        cfg->consultas_por_hilo = obtener_valor_int(fp, "consultas_por_hilo", 5);
+        
+        fclose(fp);
     }
     
     if (signos_file) {
-        FILE *fp = fopen(signos_file, "r");
+        fp = fopen(signos_file, "r");
         if (fp) {
             char linea[512];
             cfg->num_signos = 0;
@@ -66,6 +107,21 @@ int cargar_configuracion(const char *config_file, const char *signos_file, Confi
                     strncpy(cfg->predicciones[cfg->num_signos], pipe + 1, 255);
                     cfg->num_signos++;
                 }
+            }
+            fclose(fp);
+        }
+    }
+    
+    if (pronosticos_file) {
+        fp = fopen(pronosticos_file, "r");
+        if (fp) {
+            char linea[512];
+            cfg->num_pronosticos = 0;
+            while (fgets(linea, sizeof(linea), fp) && cfg->num_pronosticos < MAX_PRONOSTICOS) {
+                trim(linea);
+                if (linea[0] == '\0' || linea[0] == '#') continue;
+                strncpy(cfg->pronosticos[cfg->num_pronosticos], linea, 511);
+                cfg->num_pronosticos++;
             }
             fclose(fp);
         }
@@ -102,4 +158,11 @@ const char* obtener_prediccion(const Config *cfg, const char *signo) {
         }
     }
     return "Signo no reconocido.";
+}
+
+const char* obtener_pronostico(const Config *cfg, int index) {
+    if (index >= 0 && index < cfg->num_pronosticos) {
+        return cfg->pronosticos[index];
+    }
+    return "Pronostico no disponible.";
 }

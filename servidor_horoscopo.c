@@ -8,7 +8,7 @@
 #include <time.h>
 #include "config.h"
 
-#define CONFIG_FILE "config.json"
+#define CONFIG_FILE "config.conf"
 #define SIGNOS_FILE "signos.txt"
 
 Config cfg;
@@ -47,7 +47,7 @@ int main(){
     socklen_t client_len;
     pthread_t hilo;
 
-    if (cargar_configuracion(CONFIG_FILE, SIGNOS_FILE, &cfg) < 0) {
+    if (cargar_configuracion(CONFIG_FILE, SIGNOS_FILE, NULL, &cfg) < 0) {
         fprintf(stderr, "Error al cargar configuracion. Usando valores por defecto.\n");
     }
     

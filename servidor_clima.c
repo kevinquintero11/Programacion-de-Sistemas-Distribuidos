@@ -8,21 +8,8 @@
 #include <time.h>
 #include "config.h"
 
-#define CONFIG_FILE "config.json"
-#define NUM_PRONOSTICOS 10
-
-const char *pronosticos[] = {
-    "Día soleado con cielos despejados. Perfecto para actividades al aire libre.",
-    "Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.",
-    "Temperaturas cálidas, alcanzando los 28°C. Hidrátate adecuadamente.",
-    "Vientos fuertes del norte. Precaución si conduces vehículos ligeros.",
-    "Tormentas eléctricas prevista para la noche. Mejor quedarse en casa.",
-    "Niebla matutina que desaparecerá al mediodía. Visibilidad reducida en horas temprana.",
-    "Día parcialmente nublado. Temperaturas agradables entre 18°C y 24°C.",
-    "Lluvias persistentes durante todo el día. Evita zonas propensas a inundaciones.",
-    "Granizo probable en zonas montañosas. Precaución con cultivos y vehículos.",
-    "Aumento de temperatura significativo. Alerta por olas de calor en zonas urbanas."
-};
+#define CONFIG_FILE "config.conf"
+#define PRONOSTICOS_FILE "pronosticos.txt"
 
 Config cfg;
 
@@ -45,9 +32,10 @@ void *manejar_cliente(void *arg){
         strncpy(fecha, buffer, sizeof(fecha) - 1);
         
         srand(time(NULL) + strlen(fecha));
-        index_pronostico = rand() % NUM_PRONOSTICOS;
+        index_pronostico = rand() % cfg.num_pronosticos;
         
-        snprintf(buffer, cfg.tamano_buffer, "Clima %s: %s", fecha, pronosticos[index_pronostico]);
+        const char *pronostico = obtener_pronostico(&cfg, index_pronostico);
+        snprintf(buffer, cfg.tamano_buffer, "Clima %s: %s", fecha, pronostico);
         send(client_fd, buffer, strlen(buffer), 0);
     }
 
@@ -62,7 +50,7 @@ int main(){
     socklen_t client_len;
     pthread_t hilo;
 
-    if (cargar_configuracion(CONFIG_FILE, NULL, &cfg) < 0) {
+    if (cargar_configuracion(CONFIG_FILE, NULL, PRONOSTICOS_FILE, &cfg) < 0) {
         fprintf(stderr, "Error al cargar configuracion. Usando valores por defecto.\n");
     }
     

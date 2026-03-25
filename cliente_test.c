@@ -8,7 +8,7 @@
 #include <time.h>
 #include "config.h"
 
-#define CONFIG_FILE "config.json"
+#define CONFIG_FILE "config.conf"
 #define SIGNOS_FILE "signos.txt"
 
 char fechas[][20] = {
@@ -25,7 +25,7 @@ void* cliente(void *arg) {
     int id = *((int*)arg);
     free(arg);
 
-    if (cargar_configuracion(CONFIG_FILE, SIGNOS_FILE, &cfg) < 0) {
+    if (cargar_configuracion(CONFIG_FILE, SIGNOS_FILE, NULL, &cfg) < 0) {
         fprintf(stderr, "[Hilo %d] Error al cargar configuracion\n", id);
         return NULL;
     }
@@ -93,7 +93,7 @@ int main() {
     Config cfg;
     pthread_t hilos[100];
 
-    if (cargar_configuracion(CONFIG_FILE, SIGNOS_FILE, &cfg) < 0) {
+    if (cargar_configuracion(CONFIG_FILE, SIGNOS_FILE, NULL, &cfg) < 0) {
         fprintf(stderr, "Error al cargar configuracion\n");
         return 1;
     }

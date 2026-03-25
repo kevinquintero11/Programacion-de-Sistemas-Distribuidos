@@ -29,6 +29,32 @@ Sistema cliente-servidor distribuido que permite consultar horóscopos y predicc
 | Servidor Clima | `servidor_clima.c` | Genera pronósticos del tiempo |
 | Configuración | `config.h`, `config.c`, `config.conf` | Gestión de configuración |
 
+## Archivos de Datos
+
+El sistema utiliza archivos de texto externos para los datos:
+
+| Archivo | Descripción |
+|---------|-------------|
+| `config.conf` | Configuración general del sistema |
+| `signos.txt` | Signos zodiacales y predicciones (formato: signo\|prediccion) |
+| `pronosticos.txt` | Pronósticos del clima (uno por línea) |
+
+### Formato de signos.txt
+
+```
+aries|El fuego de Aries te impulsa a tomar la iniciativa hoy.
+tauro|La perseverancia de Tauro te traera recompensas tangibles.
+...
+```
+
+### Formato de pronosticos.txt
+
+```
+Día soleado con cielos despejados. Perfecto para actividades al aire libre.
+Nublado con posibilidad de lluvias aisladas en la tarde. Lleva un paraguas.
+...
+```
+
 ## Configuración
 
 Todos los parámetros del sistema se gestionan desde el archivo `config.conf`:
@@ -50,9 +76,6 @@ tamano_cache=100
 # === BUFFER ===
 tamano_buffer=1024
 
-# === SIGNOS ZODIACALES (para cliente_test) ===
-signos=leo,aries,tauro,cancer,virgo
-
 # === NUMERO DE HILOS Y CONSULTAS (cliente_test) ===
 num_hilos=10
 consultas_por_hilo=5
@@ -70,7 +93,6 @@ consultas_por_hilo=5
 | `puerto_servidor_clima` | Puerto TCP del servidor de clima | 5002 |
 | `tamano_cache` | Número máximo de entradas en caché | 100 |
 | `tamano_buffer` | Tamaño del buffer de red (bytes) | 1024 |
-| `signos` | Lista de signos para cliente_test | leo,aries,tauro,cancer,virgo |
 | `num_hilos` | Hilos en cliente_test | 10 |
 | `consultas_por_hilo` | Consultas por hilo en cliente_test | 5 |
 
@@ -139,13 +161,14 @@ leo|12/08/1999
 
 **Servidor Central → Cliente:**
 ```
-Horóscopo leo: Hoy será un día excepcional para ti. Las estrellas alinean tu camino hacia el éxito.
+Horóscopo leo: La creatividad de Leo brilla con fuerza hoy. Expresate libremente.
 Clima 12/08/1999: Temperaturas cálidas, alcanzando los 28°C. Hidrátate adecuadamente.
 ```
 
 ### Flujo de datos
 
-1. Cliente envía `signo fecha` al Servidor Central
+1. Cliente envía `signo|fecha` al Servidor Central
+>>>>>>> 6b41435 (update de archivos con datos)
 2. Servidor Central consulta:
    - Servidor Horóscopo
    - Servidor Clima
@@ -174,12 +197,7 @@ Clima 12/08/1999: Temperaturas cálidas, alcanzando los 28°C. Hidrátate adecua
 
 ### Predicciones
 
-| Servidor | Pool de predicciones |
-|----------|---------------------|
-| Horóscopo | 10 frases astrológicas |
-| Clima | 10 escenarios meteorológicos |
-
-Las predicciones se seleccionan aleatoriamente usando `rand()` con semilla basada en `time(NULL) + strlen(dato)`.
+Los signos zodiacales y predicciones se cargan desde `signos.txt`, y los pronósticos del clima desde `pronosticos.txt`. Las predicciones se seleccionan aleatoriamente usando `rand()` con semilla basada en `time(NULL) + strlen(dato)`.
 
 ## Estructura del Código
 
@@ -192,16 +210,3 @@ servidor_clima.c       - Microservicio de clima
 config.h               - Header de configuración
 config.c               - Parser de configuración
 config.conf            - Archivo de configuración
-Makefile               - Script de compilación
-```
-
-## Manejo de Errores
-
-| Situación | Comportamiento |
-|-----------|----------------|
-| Socket no creado | `perror()` + exit(1) |
-| bind() falla | `perror()` + exit(1) |
-| connect() falla | `perror()` + continúa |
-| recv() falla | Cierra conexión + retorna |
-| Servidor no disponible | Retorna mensaje de error |
-| config.conf no encontrado | Muestra error, usa valores por defecto |

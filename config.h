@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #define MAX_SIGNOS 20
+#define MAX_PRONOSTICOS 20
 
 typedef struct {
     char ip_central[64];
@@ -21,10 +22,14 @@ typedef struct {
     char signos[MAX_SIGNOS][50];
     char predicciones[MAX_SIGNOS][256];
     int num_signos;
+    
+    char pronosticos[MAX_PRONOSTICOS][512];
+    int num_pronosticos;
 } Config;
 
-int cargar_configuracion(const char *config_file, const char *signos_file, Config *cfg);
+int cargar_configuracion(const char *config_file, const char *signos_file, const char *pronosticos_file, Config *cfg);
 void mostrar_configuracion(const Config *cfg);
 const char* obtener_prediccion(const Config *cfg, const char *signo);
+const char* obtener_pronostico(const Config *cfg, int index);
 
 #endif

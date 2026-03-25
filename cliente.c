@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include "config.h"
 
-#define CONFIG_FILE "config.json"
+#define CONFIG_FILE "config.conf"
 #define SIGNOS_FILE "signos.txt"
 
 int main(int argc, char *argv[]){
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
     char *buffer;
     char signo[50], fecha[50];
 
-    if (cargar_configuracion(CONFIG_FILE, SIGNOS_FILE, &cfg) < 0) {
+    if (cargar_configuracion(CONFIG_FILE, SIGNOS_FILE, NULL, &cfg) < 0) {
         fprintf(stderr, "Error al cargar configuracion\n");
         exit(1);
     }
