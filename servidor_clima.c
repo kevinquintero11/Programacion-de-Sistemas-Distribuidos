@@ -8,7 +8,7 @@
 #include <time.h>
 #include "config.h"
 
-#define CONFIG_FILE "config.conf"
+#define CONFIG_FILE "config.json"
 #define NUM_PRONOSTICOS 10
 
 const char *pronosticos[] = {
@@ -62,7 +62,7 @@ int main(){
     socklen_t client_len;
     pthread_t hilo;
 
-    if (cargar_configuracion(CONFIG_FILE, &cfg) < 0) {
+    if (cargar_configuracion(CONFIG_FILE, NULL, &cfg) < 0) {
         fprintf(stderr, "Error al cargar configuracion. Usando valores por defecto.\n");
     }
     

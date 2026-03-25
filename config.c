@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "config.h"
+#include "json.h"
 
 static void trim(char *str) {
     char *end;
@@ -12,56 +14,9 @@ static void trim(char *str) {
     *(end + 1) = 0;
 }
 
-static int es_comentario_o_vacio(const char *linea) {
-    if (linea[0] == '#' || linea[0] == '\0' || linea[0] == '\n') {
-        return 1;
-    }
-    return 0;
-}
-
-static void parsear_signos(const char *valor, Config *cfg) {
-    char copia[512];
-    char *token;
-    
-    strncpy(copia, valor, sizeof(copia) - 1);
-    cfg->num_signos = 0;
-    
-    token = strtok(copia, ",");
-    while (token != NULL && cfg->num_signos < MAX_SIGNOS) {
-        trim(token);
-        if (strlen(token) > 0) {
-            strncpy(cfg->signos[cfg->num_signos], token, 49);
-            cfg->signos[cfg->num_signos][49] = '\0';
-            cfg->num_signos++;
-        }
-        token = strtok(NULL, ",");
-    }
-}
-
-static void parsear_prediccion(const char *clave, const char *valor, Config *cfg) {
-    if (strncmp(clave, "prediccion_", 11) == 0) {
-        const char *signo = clave + 11;
-        for (int i = 0; i < cfg->num_signos; i++) {
-            if (strcasecmp(signo, cfg->signos[i]) == 0) {
-                strncpy(cfg->predicciones[i], valor, 255);
-                cfg->predicciones[i][255] = '\0';
-                if (i >= cfg->num_predicciones) {
-                    cfg->num_predicciones = i + 1;
-                }
-                return;
-            }
-        }
-    }
-}
-
-int cargar_configuracion(const char *archivo, Config *cfg) {
-    FILE *fp = fopen(archivo, "r");
-    if (!fp) {
-        fprintf(stderr, "Error: No se pudo abrir %s\n", archivo);
-        return -1;
-    }
-    
+int cargar_configuracion(const char *config_file, const char *signos_file, Config *cfg) {
     memset(cfg, 0, sizeof(Config));
+    
     cfg->puerto_central = 5000;
     cfg->puerto_horoscopo = 5001;
     cfg->puerto_clima = 5002;
@@ -74,46 +29,48 @@ int cargar_configuracion(const char *archivo, Config *cfg) {
     strcpy(cfg->ip_horoscopo, "127.0.0.1");
     strcpy(cfg->ip_clima, "127.0.0.1");
     
-    char linea[MAX_LINEA];
+    char *json_str = json_read_file(config_file);
+    if (json_str) {
+        JsonObject *obj = json_parse_object(json_str);
+        if (obj) {
+            strncpy(cfg->ip_central, json_get_string(obj, "ip_servidor_central"), 63);
+            strncpy(cfg->ip_horoscopo, json_get_string(obj, "ip_servidor_horoscopo"), 63);
+            strncpy(cfg->ip_clima, json_get_string(obj, "ip_servidor_clima"), 63);
+            cfg->puerto_central = json_get_int(obj, "puerto_servidor_central", 5000);
+            cfg->puerto_horoscopo = json_get_int(obj, "puerto_servidor_horoscopo", 5001);
+            cfg->puerto_clima = json_get_int(obj, "puerto_servidor_clima", 5002);
+            cfg->tamano_cache = json_get_int(obj, "tamano_cache", 100);
+            cfg->tamano_buffer = json_get_int(obj, "tamano_buffer", 1024);
+            cfg->num_hilos_test = json_get_int(obj, "num_hilos_test", 10);
+            cfg->consultas_por_hilo = json_get_int(obj, "consultas_por_hilo", 5);
+            json_free_object(obj);
+        }
+        free(json_str);
+    }
     
-    while (fgets(linea, sizeof(linea), fp)) {
-        char clave[64], valor[256];
-        
-        if (es_comentario_o_vacio(linea)) continue;
-        
-        if (sscanf(linea, "%63[^=]=%255[^\n]", clave, valor) == 2) {
-            trim(clave);
-            trim(valor);
-            
-            if (strcmp(clave, "ip_servidor_central") == 0) {
-                strncpy(cfg->ip_central, valor, 63);
-            } else if (strcmp(clave, "ip_servidor_horoscopo") == 0) {
-                strncpy(cfg->ip_horoscopo, valor, 63);
-            } else if (strcmp(clave, "ip_servidor_clima") == 0) {
-                strncpy(cfg->ip_clima, valor, 63);
-            } else if (strcmp(clave, "puerto_servidor_central") == 0) {
-                cfg->puerto_central = atoi(valor);
-            } else if (strcmp(clave, "puerto_servidor_horoscopo") == 0) {
-                cfg->puerto_horoscopo = atoi(valor);
-            } else if (strcmp(clave, "puerto_servidor_clima") == 0) {
-                cfg->puerto_clima = atoi(valor);
-            } else if (strcmp(clave, "tamano_cache") == 0) {
-                cfg->tamano_cache = atoi(valor);
-            } else if (strcmp(clave, "tamano_buffer") == 0) {
-                cfg->tamano_buffer = atoi(valor);
-            } else if (strcmp(clave, "signos") == 0) {
-                parsear_signos(valor, cfg);
-            } else if (strcmp(clave, "num_hilos") == 0) {
-                cfg->num_hilos_test = atoi(valor);
-            } else if (strcmp(clave, "consultas_por_hilo") == 0) {
-                cfg->consultas_por_hilo = atoi(valor);
-            } else {
-                parsear_prediccion(clave, valor, cfg);
+    if (signos_file) {
+        FILE *fp = fopen(signos_file, "r");
+        if (fp) {
+            char linea[512];
+            cfg->num_signos = 0;
+            while (fgets(linea, sizeof(linea), fp) && cfg->num_signos < MAX_SIGNOS) {
+                trim(linea);
+                if (linea[0] == '\0' || linea[0] == '#') continue;
+                
+                char *pipe = strchr(linea, '|');
+                if (pipe) {
+                    *pipe = '\0';
+                    trim(linea);
+                    trim(pipe + 1);
+                    strncpy(cfg->signos[cfg->num_signos], linea, 49);
+                    strncpy(cfg->predicciones[cfg->num_signos], pipe + 1, 255);
+                    cfg->num_signos++;
+                }
             }
+            fclose(fp);
         }
     }
     
-    fclose(fp);
     return 0;
 }
 
@@ -130,9 +87,6 @@ void mostrar_configuracion(const Config *cfg) {
             printf("%s ", cfg->signos[i]);
         }
         printf("\n");
-    }
-    if (cfg->num_predicciones > 0) {
-        printf("Predicciones cargadas: %d\n", cfg->num_predicciones);
     }
     printf("======================\n");
     fflush(stdout);
