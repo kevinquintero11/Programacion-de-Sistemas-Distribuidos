@@ -6,15 +6,15 @@ Sistema cliente-servidor distribuido que permite consultar horóscopos y predicc
 
 ```
 ┌─────────────┐         ┌──────────────────┐         ┌──────────────────┐
-│   Cliente   │ ──────> │ Servidor Central │ ──────> │ Serv. Horóscopo │
-│             │ <────── │                  │ <────── │                 │
+│   Cliente   │ ──────> │ Servidor Central │ ──────> │ Serv. Horóscopo  │
+│             │ <────── │                  │ <────── │                  │
 └─────────────┘         │   ┌──────────┐   │         └──────────────────┘
                         │   │  Cache   │   │
                         │   │  (100)   │   │
                         │   └──────────┘   │
                         │                  │         ┌──────────────────┐
-                        │                  │ ──────> │  Serv. Clima    │
-                        │                  │ <────── │                 │
+                        │                  │ ──────> │  Serv. Clima     │
+                        │                  │ <────── │                  │
                         └──────────────────┘         └──────────────────┘
 ```
 
@@ -186,13 +186,13 @@ Las predicciones se seleccionan aleatoriamente usando `rand()` con semilla basad
 ```
 cliente.c              - Cliente principal (monohilo)
 cliente_test.c         - Cliente de pruebas (hilos configurables)
-servidor_central.c    - Orquestador con caché
-servidor_horoscopo.c  - Microservicio de horóscopo
-servidor_clima.c      - Microservicio de clima
-config.h              - Header de configuración
-config.c              - Parser de configuración
-config.conf           - Archivo de configuración
-Makefile              - Script de compilación
+servidor_central.c     - Orquestador con caché
+servidor_horoscopo.c   - Microservicio de horóscopo
+servidor_clima.c       - Microservicio de clima
+config.h               - Header de configuración
+config.c               - Parser de configuración
+config.conf            - Archivo de configuración
+Makefile               - Script de compilación
 ```
 
 ## Manejo de Errores
