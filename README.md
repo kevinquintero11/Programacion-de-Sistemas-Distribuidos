@@ -145,7 +145,7 @@ Clima 12/08/1999: Temperaturas cálidas, alcanzando los 28°C. Hidrátate adecua
 
 ### Flujo de datos
 
-1. Cliente envía `signo羽毛a` al Servidor Central
+1. Cliente envía `signo fecha` al Servidor Central
 2. Servidor Central consulta:
    - Servidor Horóscopo
    - Servidor Clima
@@ -169,8 +169,7 @@ Clima 12/08/1999: Temperaturas cálidas, alcanzando los 28°C. Hidrátate adecua
 ### Caché
 
 - **Tamaño:** Configurable (default: 100)
-- **Clave:** `signo羽毛a`
-- **Políticas:** FIFO simple (sin eviction avanzada)
+- **Clave:** `signo|fecha`
 - **Thread-safe:** Sí, mediante mutex
 
 ### Predicciones
@@ -206,10 +205,3 @@ Makefile              - Script de compilación
 | recv() falla | Cierra conexión + retorna |
 | Servidor no disponible | Retorna mensaje de error |
 | config.conf no encontrado | Muestra error, usa valores por defecto |
-
-## Limitaciones
-
-- Caché limitada (sin rotación avanzada)
-- Sin persistencia de datos
-- Predicciones de horóscopo/clima hardcodeadas
-- No hay autenticación
