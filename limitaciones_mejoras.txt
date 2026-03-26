@@ -1,0 +1,212 @@
+================================================================================
+          ANÁLISIS DE LIMITACIONES Y PROYECCIÓN DE MEJORAS
+================================================================================
+
+================================================================================
+                         ANÁLISIS POR MÓDULO
+================================================================================
+
+------------------------------------------------------------------------------
+                        CLIENTE (cliente.c)
+------------------------------------------------------------------------------
+
+LIMITACIONES ACTUALES:
+-----------------------
+1. Conexión sin retry: Si connect() falla, el programa intenta enviar igual
+   (línea 51-53), causando comportamiento indefinido.
+
+2. Tamaño de buffer incorrecto: Usa sizeof(buffer) en snprintf (línea 57),
+   que es el tamaño del puntero (8 bytes), no del buffer allocated.
+
+3. Sin validación de entrada: No valida formato de fecha ni si el signo
+   existe en la lista de signos válidos.
+
+4. Sin manejo de timeout: Espera indefinidamente en recv().
+
+5. Un solo intento: No permite reintentar la consulta si falla.
+
+6. Sin interfaz interactiva: Solo acepta argumentos de línea de comandos.
+
+7. Sin historial de consultas: No guarda las consultas anteriores.
+
+MEJORAS PROYECTADAS:
+--------------------
+- Agregar mecanismo de reintento con backoff exponencial
+- Validar formato de fecha (dd/mm/aaaa) con regex
+- Validar signo contra lista cargada desde config
+- Agregar timeout de conexión y recepción (setsockopt)
+- Permitir modo interactivo para múltiples consultas
+- Guardar historial en archivo para referencia futura
+- Agregar opción de exportar resultados a JSON
+
+------------------------------------------------------------------------------
+                    SERVIDOR CENTRAL (servidor_central.c)
+------------------------------------------------------------------------------
+
+LIMITACIONES ACTUALES:
+----------------------
+1. Caché FIFO simple: Cuando se llena, no evicta entradas antiguas.
+   Nueva información nunca reemplaza la antigua.
+
+2. Sin gestión de memoria en hilos: La memoria (buffer, horoscopo, etc.)
+   se asigna pero no se libera antes de retornar en algunos flujos.
+
+3. Debug prints mezclados: Los printf() de debugging mezclan con las
+   respuestas, making difícil parsing automático.
+
+4. Sin timeout en conexiones: Las conexiones a SH y SP pueden quedar
+   bloqueadas indefinidamente.
+
+5. Mensaje hardcodeado de error: "Error al consultar horóscopo" es fijo,
+   no indica la causa real del error.
+
+6. Sin logging estructurado: No hay rotación de logs, solo stdout.
+
+7. No hay shutdown graceful: Ctrl+C mata el proceso sin cleanup.
+
+8. Parser fragile: strtok() puede fallar con input malformado.
+
+9. No detecta servidores caídos: Intenta conectar aunque SH/SP no existan.
+
+10. Sin métricas: No cuenta requests, errores, latencia, hit rate de caché.
+
+MEJORAS PROYECTADAS:
+--------------------
+- Implementar políticas de caché: LRU, LFU, o TTL-based
+- Agregar memoria en todos los paths de retorno de manejar_cliente()
+- Separar logs de debug (stderr) de respuestas al cliente (stdout)
+- Agregar timeout en connect() y recv() con select() o setsockopt()
+- Incluir códigos de error más detallados
+- Implementar sistema de logging con rotación (logrotate style)
+- Agregar handling de señales (SIGTERM, SIGINT) para shutdown graceful
+- Validar formato de input antes de procesar
+- Agregar health check de servidores remotos
+- Agregar métricas: contadores, histogramas de latencia, hit rate
+
+------------------------------------------------------------------------------
+                   SERVIDOR HORÓSCOPO (servidor_horoscopo.c)
+------------------------------------------------------------------------------
+
+LIMITACIONES ACTUALES:
+----------------------
+1. Respuesta genérica para signo inválido: "Signo no reconocido." se devuelve
+   como si fuera una predicción válida.
+
+2. Semilla aleatoria no necesaria: No hay randomness en horóscopo,
+   la función no necesita srand().
+
+3. Sin logging de requests: No registra quién consultó, cuándo, o qué signo.
+
+4. Código no reutilizable: La estructura es casi identical a servidor_clima,
+   duplicando código.
+
+5. Sin shutdown graceful: Código muerto después del while(1).
+
+MEJORAS PROYECTADAS:
+--------------------
+- Devolver código de estado diferente para signo no válido
+- Eliminar srand() innecesario
+- Agregar logging de cada consulta (IP cliente, timestamp, signo)
+- Crear biblioteca común para código de servidor compartido
+- Agregar manejo de señales para cleanup
+
+------------------------------------------------------------------------------
+                    SERVIDOR CLIMA (servidor_clima.c)
+------------------------------------------------------------------------------
+
+LIMITACIONES ACTUALES:
+----------------------
+1. srand() llamado en cada request (línea 34): Si múltiples clientes
+   consultan al mismo tiempo con la misma fecha, obtendrán el mismo
+   pronóstico (porque time(NULL) no cambia en ese momento).
+
+2. No valida formato de fecha: Pasa cualquier cosa como "fecha" sin verificar.
+
+3. Pronósticos no relacionados con fecha: El pronóstico no depende de
+   la fecha, podría depender de estación del año, ubicación, etc.
+
+4. Mismos problemas de servidor_horoscopo: logging, shutdown, código duplicado.
+
+MEJORAS PROYECTADAS:
+--------------------
+- Inicializar srand() una sola vez en main(), no en cada request
+- Agregar validación de formato de fecha (dd/mm/aaaa)
+- Implementar lógica de pronóstico basada en fecha (estación, etc.)
+- Agregar soporte para ubicación geográfica del usuario
+
+================================================================================
+                    LIMITACIONES GLOBALES DEL SISTEMA
+================================================================================
+
+1. SEGURIDAD
+   - Sin autenticación ni autorización
+   - Sin cifrado (TCP plano)
+   - Sin rate limiting
+   - Vulnerable a inyección de comandos
+
+2. ESCALABILIDAD
+   - Un solo hilo por cliente (aunque sea hilo, no escala horizontalmente)
+   - No hay balanceo de carga
+   - No hay replicación de servidores
+
+3. ROBUSTEZ
+   - No hay retry entre servidores
+   - No hay circuit breaker
+   - No hay dead letter queue
+   - Un servidor caído afecta todo el sistema
+
+4. MONITOREO
+   - Sin métricas de infraestructura
+   - Sin alertas
+   - Sin dashboard
+   - Sin health checks formalizados
+
+5. PERSISTENCIA
+   - Sin base de datos
+   - Caché volatil (se pierde al reiniciar)
+   - Sin backup de configuración
+
+6. PROTOCOLO
+   - Formato simple sin estándar
+   - Sin versionamiento
+   - Sin documentación de API
+
+7. TESTING
+   - Sin tests unitarios
+   - Sin tests de integración
+   - Sin tests de carga formalizados
+   - Sin CI/CD
+
+================================================================================
+                    HOJA DE RUTA DE MEJORAS SUGERIDAS
+================================================================================
+
+CORTO PLAZO (1-2 semanas):
+--------------------------
+1. Fix: sizeof(buffer) en cliente.c → usar tamano_buffer
+2. Fix: srand() en servidor_clima.c → mover a main()
+3. Fix: Validación de input en servidor_central.c
+4. Fix: Memory leaks en manejar_cliente()
+5. Agregar logging estructurado a todos los servidores
+
+MEDIANO PLAZO (1-2 meses):
+--------------------------
+1. Implementar políticas de caché (LRU/TTL)
+2. Agregar timeout en todas las operaciones de red
+3. Crear cliente con retry mechanism
+4. Implementar shutdown graceful
+5. Agregar métricas básicas (contadores, latencia)
+6. Separar logs de debug de respuestas
+
+LARGO PLAZO (3-6 meses):
+------------------------
+1. Autenticación y autorización
+2. Cifrado TLS
+3. Rate limiting
+4. Sistema de logging avanzado
+5. Health checks y auto-recuperación
+6. API REST formalizada
+7. Contenedores (Docker)
+8. Orquestación (Docker Compose o Kubernetes)
+
+================================================================================

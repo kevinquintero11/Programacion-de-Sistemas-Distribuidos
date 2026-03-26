@@ -94,13 +94,13 @@ void* manejar_cliente(void *arg){
 
     memset(buffer, 0, cfg.tamano_buffer);
 	if (recv(client_fd, buffer, cfg.tamano_buffer - 1, 0) <= 0) {
-    free(buffer);
-    free(horoscopo);
-    free(clima);
-    free(resultado_final);
-    close(client_fd);
-	return NULL;
-}
+		free(buffer);
+		free(horoscopo);
+		free(clima);
+		free(resultado_final);
+		close(client_fd);
+		return NULL;
+	}
 
 	char clave[100];
 	strncpy(clave, buffer, sizeof(clave) - 1);
@@ -149,6 +149,7 @@ void* manejar_cliente(void *arg){
 	close(client_fd);
 	return NULL;
 }
+
 
 int main(){
     int server_fd, client_fd;

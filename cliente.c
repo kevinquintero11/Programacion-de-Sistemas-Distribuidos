@@ -52,12 +52,9 @@ int main(int argc, char *argv[]){
         perror("Error al intentar conectarse con el servidor central");
     }
 
-     printf("Conectado al Servidor Central (%s:%d)\n", cfg.ip_central, cfg.puerto_central);
+    printf("Conectado al Servidor Central (%s:%d)\n", cfg.ip_central, cfg.puerto_central);
     
-    char clave[100];
-    snprintf(clave, sizeof(clave), "%s|%s", signo, fecha);
-
-    strncpy(buffer, clave, sizeof(clave) - 1);
+    snprintf(buffer, strlen(buffer), "%s|%s", signo, fecha);
 
     if (send(sock_fd, buffer, strlen(buffer), 0) < 0) {
         perror("Error al enviar datos");

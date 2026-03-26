@@ -60,34 +60,25 @@ static void obtener_valor_string(FILE *fp, const char *key_buscado, char *dest, 
 int cargar_configuracion(const char *config_file, const char *signos_file, const char *pronosticos_file, Config *cfg) {
     memset(cfg, 0, sizeof(Config));
     
-    cfg->puerto_central = 5000;
-    cfg->puerto_horoscopo = 5001;
-    cfg->puerto_clima = 5002;
-    cfg->tamano_cache = 100;
-    cfg->tamano_buffer = 1024;
-    cfg->num_hilos_test = 10;
-    cfg->consultas_por_hilo = 5;
-    
-    strcpy(cfg->ip_central, "127.0.0.1");
-    strcpy(cfg->ip_horoscopo, "127.0.0.1");
-    strcpy(cfg->ip_clima, "127.0.0.1");
-    
     FILE *fp = fopen(config_file, "r");
-    if (fp) {
-        obtener_valor_string(fp, "ip_servidor_central", cfg->ip_central, 64, "127.0.0.1");
-        obtener_valor_string(fp, "ip_servidor_horoscopo", cfg->ip_horoscopo, 64, "127.0.0.1");
-        obtener_valor_string(fp, "ip_servidor_clima", cfg->ip_clima, 64, "127.0.0.1");
-        
-        cfg->puerto_central = obtener_valor_int(fp, "puerto_servidor_central", 5000);
-        cfg->puerto_horoscopo = obtener_valor_int(fp, "puerto_servidor_horoscopo", 5001);
-        cfg->puerto_clima = obtener_valor_int(fp, "puerto_servidor_clima", 5002);
-        cfg->tamano_cache = obtener_valor_int(fp, "tamano_cache", 100);
-        cfg->tamano_buffer = obtener_valor_int(fp, "tamano_buffer", 1024);
-        cfg->num_hilos_test = obtener_valor_int(fp, "num_hilos", 10);
-        cfg->consultas_por_hilo = obtener_valor_int(fp, "consultas_por_hilo", 5);
-        
-        fclose(fp);
+    if (!fp) {
+        fprintf(stderr, "Error: No se pudo abrir %s\n", config_file);
+        return -1;
     }
+    
+    obtener_valor_string(fp, "ip_servidor_central", cfg->ip_central, 64, "");
+    obtener_valor_string(fp, "ip_servidor_horoscopo", cfg->ip_horoscopo, 64, "");
+    obtener_valor_string(fp, "ip_servidor_clima", cfg->ip_clima, 64, "");
+    
+    cfg->puerto_central = obtener_valor_int(fp, "puerto_servidor_central", 0);
+    cfg->puerto_horoscopo = obtener_valor_int(fp, "puerto_servidor_horoscopo", 0);
+    cfg->puerto_clima = obtener_valor_int(fp, "puerto_servidor_clima", 0);
+    cfg->tamano_cache = obtener_valor_int(fp, "tamano_cache", 0);
+    cfg->tamano_buffer = obtener_valor_int(fp, "tamano_buffer", 0);
+    cfg->num_hilos_test = obtener_valor_int(fp, "num_hilos", 0);
+    cfg->consultas_por_hilo = obtener_valor_int(fp, "consultas_por_hilo", 0);
+    
+    fclose(fp);
     
     if (signos_file) {
         fp = fopen(signos_file, "r");
