@@ -50,7 +50,7 @@ int main(){
     socklen_t client_len;
     pthread_t hilo;
 
-    if (cargar_configuracion(CONFIG_FILE, NULL, PRONOSTICOS_FILE, &cfg) < 0) {
+    if (cargar_configuracion(CONFIG_FILE, PRONOSTICOS_FILE, &cfg) < 0) {
         fprintf(stderr, "Error al cargar configuracion. Usando valores por defecto.\n");
     }
     

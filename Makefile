@@ -1,28 +1,24 @@
 CC = gcc
 CFLAGS = -Wall -pthread -g
-UTILS_PATH = utils
 
-all: cliente/cliente cliente/cliente_test servidor_central/sc servidor_horoscopo/sh servidor_clima/sp
+all: cliente/cliente cliente/cliente_test/cliente_test servidor_central/sc servidor_horoscopo/sh servidor_clima/sp
 
-config.o: $(UTILS_PATH)/config.c $(UTILS_PATH)/config.h
-	$(CC) $(CFLAGS) -I$(UTILS_PATH) -c $(UTILS_PATH)/config.c
+cliente/cliente: cliente/cliente.c cliente/config.c
+	$(CC) $(CFLAGS) -o cliente/cliente cliente/cliente.c cliente/config.c
 
-cliente/cliente: cliente/cliente.c config.o
-	$(CC) $(CFLAGS) -I$(UTILS_PATH) -o cliente/cliente cliente/cliente.c config.o
+cliente/cliente_test/cliente_test: cliente/cliente_test/cliente_test.c cliente/cliente_test/config.c
+	$(CC) $(CFLAGS) -o cliente/cliente_test/cliente_test cliente/cliente_test/cliente_test.c cliente/cliente_test/config.c
 
-cliente/cliente_test: cliente/cliente_test.c config.o
-	$(CC) $(CFLAGS) -I$(UTILS_PATH) -o cliente/cliente_test cliente/cliente_test.c config.o
+servidor_central/sc: servidor_central/servidor_central.c servidor_central/config.c
+	$(CC) $(CFLAGS) -o servidor_central/sc servidor_central/servidor_central.c servidor_central/config.c
 
-servidor_central/sc: servidor_central/servidor_central.c config.o
-	$(CC) $(CFLAGS) -I$(UTILS_PATH) -o servidor_central/sc servidor_central/servidor_central.c config.o
+servidor_horoscopo/sh: servidor_horoscopo/servidor_horoscopo.c servidor_horoscopo/config.c
+	$(CC) $(CFLAGS) -o servidor_horoscopo/sh servidor_horoscopo/servidor_horoscopo.c servidor_horoscopo/config.c
 
-servidor_horoscopo/sh: servidor_horoscopo/servidor_horoscopo.c config.o
-	$(CC) $(CFLAGS) -I$(UTILS_PATH) -o servidor_horoscopo/sh servidor_horoscopo/servidor_horoscopo.c config.o
-
-servidor_clima/sp: servidor_clima/servidor_clima.c config.o
-	$(CC) $(CFLAGS) -I$(UTILS_PATH) -o servidor_clima/sp servidor_clima/servidor_clima.c config.o
+servidor_clima/sp: servidor_clima/servidor_clima.c servidor_clima/config.c
+	$(CC) $(CFLAGS) -o servidor_clima/sp servidor_clima/servidor_clima.c servidor_clima/config.c
 
 clean:
-	rm -f cliente/cliente cliente/cliente_test servidor_central/sc servidor_horoscopo/sh servidor_clima/sp *.o
+	rm -f cliente/cliente cliente/cliente_test/cliente_test servidor_central/sc servidor_horoscopo/sh servidor_clima/sp
 
 .PHONY: all clean
