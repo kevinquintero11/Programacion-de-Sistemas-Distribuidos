@@ -128,13 +128,6 @@ void mostrar_configuracion(const Config *cfg) {
     printf("IP Clima: %s:%d\n", cfg->ip_clima, cfg->puerto_clima);
     printf("Tamano Cache: %d\n", cfg->tamano_cache);
     printf("Tamano Buffer: %d\n", cfg->tamano_buffer);
-    if (cfg->num_signos > 0) {
-        printf("Signos: ");
-        for (int i = 0; i < cfg->num_signos; i++) {
-            printf("%s ", cfg->signos[i]);
-        }
-        printf("\n");
-    }
     printf("======================\n");
     fflush(stdout);
 }
