@@ -1,0 +1,12 @@
+aries|El fuego de Aries te impulsa a tomar la iniciativa hoy.
+tauro|La perseverancia de Tauro te traera recompensas tangibles.
+geminis|La curiosidad de Geminis abre puertas a nuevos conocimientos.
+cancer|El instinto de Cancer te guia hacia decisiones acertadas.
+leo|La creatividad de Leo brilla con fuerza hoy. Expresate libremente.
+virgo|El analisis de Virgo revela soluciones practicas a problemas complejos.
+libra|La armonia de Libra te ayuda a resolver conflictos con elegancia.
+escorpio|La intensidad de Escorpio revela verdades ocultas en tu entorno.
+sagitario|El optimismo de Sagitario te abre a oportunidades de crecimiento.
+capricornio|La disciplina de Capricornio construye cimientos solidos para el exito.
+acuario|La innovacion de Acuario rompe esquemas y abre nuevos caminos.
+piscis|La intuicion de Piscis te conecta con emociones profundas y creatividad.
