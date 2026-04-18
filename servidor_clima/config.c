@@ -66,6 +66,38 @@ int cargar_configuracion(const char *config_file, const char *pronosticos_file, 
     return 0;
 }
 
+int formato_es_valido(const char* pronostico) {
+    // 1. Chequeo básico: que no sea nulo
+    if (pronostico == NULL) {
+        return 0;
+    }
+    
+    // 2. Validar que la longitud sea exactamente 10 ("dd/mm/aaaa")
+    if (strlen(pronostico) != 10) {
+        return 0;
+    }
+
+    // 3. Validar que haya barras '/' en las posiciones correctas
+    if (pronostico[2] != '/' || pronostico[5] != '/') {
+        return 0;
+    }
+
+    // 4. Validar que el resto de los caracteres sean dígitos numéricos
+    for (int i = 0; i < 10; i++) {
+        // Saltamos las posiciones donde sabemos que están las barras
+        if (i == 2 || i == 5) {
+            continue;
+        }
+        
+        // Si algún otro caracter no es un número, el formato es inválido
+        if (!isdigit((unsigned char)pronostico[i])) {
+            return 0;
+        }
+    }
+
+    return 1; 
+}
+
 const char* obtener_pronostico(const Config *cfg, int index) {
     if (index >= 0 && index < cfg->num_pronosticos) {
         return cfg->pronosticos[index];
