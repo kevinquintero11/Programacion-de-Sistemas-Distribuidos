@@ -31,11 +31,16 @@ void *manejar_cliente(void *arg){
     if (recv(client_fd, buffer, cfg.tamano_buffer - 1, 0) > 0) {
         strncpy(fecha, buffer, sizeof(fecha) - 1);
         
-        srand(time(NULL) + strlen(fecha));
-        index_pronostico = rand() % cfg.num_pronosticos;
-        
-        const char *pronostico = obtener_pronostico(&cfg, index_pronostico);
-        snprintf(buffer, cfg.tamano_buffer, "Clima %s: %s", fecha, pronostico);
+        if (formato_es_valido(fecha) == 1) {
+            srand(time(NULL) + strlen(fecha));
+            index_pronostico = rand() % cfg.num_pronosticos;
+            
+            const char *pronostico = obtener_pronostico(&cfg, index_pronostico);
+            snprintf(buffer, cfg.tamano_buffer, "Clima %s: %s", fecha, pronostico);
+        } else {
+            snprintf(buffer, cfg.tamano_buffer, "Clima %s: %s", fecha, "El pronóstico no respeta el formato dd/mm/aaaa");
+        }
+
         send(client_fd, buffer, strlen(buffer), 0);
     }
 
