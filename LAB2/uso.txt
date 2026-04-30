@@ -1,0 +1,33 @@
+Compilar 
+javac *.java
+
+cd servidor
+rmiregistry 54321 &
+
+
+Permisos
+
+Tanto en cliente como servidor debemos garantizar los permisos creando los archivos
+cliente.permisos y servidor.permisos con el siguiente contenido:
+
+grant codeBase "file:/-" {
+        permission java.security.AllPermission;
+    };
+
+donde XXX se reemplaza por el path de las apps.
+
+
+Procedemos finalmente a la ejecución del servidor:
+cd servidor
+java -Djava.security.policy=servidor.permisos  ServidorEco 54321
+
+Y la del cliente:
+cd cliente
+java -Djava.security.policy=cliente.permisos  ClienteEco localhost 54321 hola adios
+
+Resultado
+HOLA
+ADIOS
+
+
+

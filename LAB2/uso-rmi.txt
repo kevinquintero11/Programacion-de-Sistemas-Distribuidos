@@ -1,0 +1,60 @@
+Compilacion
+
+Cada proceso toma su IP y puertos desde el archivo `config.conf` de su propia carpeta.
+Si cambias una direccion o un puerto, ajusta los `config.conf` correspondientes.
+El servidor central usa `tamano_cache` para guardar respuestas y repetir el mismo resultado para la misma consulta `signo|fecha`.
+La concurrencia de los servidores esta implementada con `Thread` y `Runnable`.
+El cliente concurrente usa `tamano_pool` para definir cuantas consultas lanza en paralelo por tanda.
+
+1. Cliente
+cd Cliente
+javac ServicioCentral.java ClienteConsulta.java ClienteConcurrente.java
+
+2. Servidor de horoscopo
+cd ../ServidorHoroscopo
+javac *.java
+
+El archivo `signos.txt` debe estar en esta misma carpeta.
+
+3. Servidor de clima
+cd ../ServidorClima
+javac *.java
+
+El archivo `pronosticos.txt` debe estar en esta misma carpeta.
+
+4. Servidor central
+cd ../ServidorCentral
+javac *.java
+
+
+Ejecucion
+
+1. Levantar servidor de horoscopo
+cd ServidorHoroscopo
+java ServidorHoroscopo
+
+2. Levantar servidor de clima
+cd ../ServidorClima
+java ServidorClima
+
+3. Levantar servidor central
+cd ../ServidorCentral
+java ServidorCentral
+
+4. Ejecutar cliente
+cd ../Cliente
+java ClienteConsulta "aries|15/06/2026" "libra|20/11/2026"
+
+5. Ejecutar cliente concurrente
+cd ../Cliente
+java ClienteConcurrente
+
+Lee las consultas desde `Cliente/consultas.txt` y guarda las respuestas en `Cliente/respuestas_concurrentes.txt`.
+Tambien puedes indicar otros archivos: `java ClienteConcurrente archivo_entrada.txt archivo_salida.txt`
+Todas las fechas deben estar en formato `dd/mm/aaaa`.
+
+
+Resultado esperado
+
+El horoscopo se lee desde `ServidorHoroscopo/signos.txt` y el clima desde `ServidorClima/pronosticos.txt`.
+Para el clima se elige una linea al azar del archivo, por lo que la misma fecha puede devolver respuestas distintas.
