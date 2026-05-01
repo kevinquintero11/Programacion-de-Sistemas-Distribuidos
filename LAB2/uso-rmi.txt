@@ -4,11 +4,14 @@ Cada proceso toma su IP y puertos desde el archivo `config.conf` de su propia ca
 Si cambias una direccion o un puerto, ajusta los `config.conf` correspondientes.
 El servidor central usa `tamano_cache` para guardar respuestas y repetir el mismo resultado para la misma consulta `signo|fecha`.
 La concurrencia de los servidores esta implementada con `Thread` y `Runnable`.
-El cliente concurrente usa `tamano_pool` para definir cuantas consultas lanza en paralelo por tanda.
+`ClienteTest` usa `tamano_pool` para definir cuantas consultas lanza en paralelo por tanda.
+
+El `config.conf` de `ServidorClima` solo necesita los datos del servidor central y del propio servidor de clima.
+El `config.conf` de `ServidorHoroscopo` solo necesita los datos del servidor central y del propio servidor de horoscopo.
 
 1. Cliente
 cd Cliente
-javac ServicioCentral.java ClienteConsulta.java ClienteConcurrente.java
+javac ServicioCentral.java ClienteConsulta.java ClienteTest.java
 
 2. Servidor de horoscopo
 cd ../ServidorHoroscopo
@@ -45,12 +48,12 @@ java ServidorCentral
 cd ../Cliente
 java ClienteConsulta "aries|15/06/2026" "libra|20/11/2026"
 
-5. Ejecutar cliente concurrente
+5. Ejecutar `ClienteTest`
 cd ../Cliente
-java ClienteConcurrente
+java ClienteTest
 
-Lee las consultas desde `Cliente/consultas.txt` y guarda las respuestas en `Cliente/respuestas_concurrentes.txt`.
-Tambien puedes indicar otros archivos: `java ClienteConcurrente archivo_entrada.txt archivo_salida.txt`
+Lee las consultas desde `Cliente/consultas.txt` y guarda las respuestas en `Cliente/respuestas_test.txt`.
+Tambien puedes indicar otros archivos: `java ClienteTest archivo_entrada.txt archivo_salida.txt`
 Todas las fechas deben estar en formato `dd/mm/aaaa`.
 
 

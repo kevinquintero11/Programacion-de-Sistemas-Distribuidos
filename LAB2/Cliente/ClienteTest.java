@@ -2,10 +2,10 @@ import java.rmi.*;
 import java.io.*;
 import java.util.*;
 
-public class ClienteConcurrente {
+public class ClienteTest {
     public static void main(String args[]) {
         String archivoConsultas = "consultas.txt";
-        String archivoRespuestas = "respuestas_concurrentes.txt";
+        String archivoRespuestas = "respuestas_test.txt";
 
         if (args.length >= 1) {
             archivoConsultas = args[0];
@@ -39,7 +39,7 @@ public class ClienteConcurrente {
             System.out.println("Respuestas guardadas en " + obtenerArchivoLocal(archivoRespuestas).getName());
         }
         catch (Exception e) {
-            System.err.println("Excepcion en ClienteConcurrente:");
+            System.err.println("Excepcion en ClienteTest:");
             e.printStackTrace();
         }
     }
@@ -140,7 +140,7 @@ public class ClienteConcurrente {
 
     private static File obtenerArchivoLocal(String nombreArchivo) {
         try {
-            File base = new File(ClienteConcurrente.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            File base = new File(ClienteTest.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             return new File(base, nombreArchivo);
         }
         catch (Exception e) {

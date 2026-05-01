@@ -11,8 +11,6 @@ public class ServidorHoroscopo {
             String puertoServidorHoroscopo = obtenerPropiedad(config, "puerto_servidor_horoscopo");
             obtenerPropiedad(config, "ip_servidor_central");
             obtenerPropiedad(config, "puerto_servidor_central");
-            obtenerPropiedad(config, "ip_servidor_clima");
-            obtenerPropiedad(config, "puerto_servidor_clima");
 
             LocateRegistry.createRegistry(Integer.parseInt(puertoServidorHoroscopo));
             ServicioHoroscopoImpl srv = new ServicioHoroscopoImpl();
