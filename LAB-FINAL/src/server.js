@@ -30,12 +30,14 @@ const server = http.createServer((req, res) => {
   });
 });
 
-const io = new Server(server);
+const io = new Server(server); // Crea un servidor de WebSocket utilizando Socket.IO
 const rooms = new Map();
 const MAX_MESSAGE_LENGTH = 500;
 let nextClientId = 1;
 
+// Maneja las conexiones de los clientes a través de Socket.IO
 io.on('connection', (socket) => {
+  // Se invoca cuando un cliente intenta unirse a una sala de chat.
   socket.on('join', ({ userName, roomCode }) => {
     const cleanRoom = sanitizeRoomCode(roomCode);
     const cleanName = sanitizeUserName(userName);
@@ -62,11 +64,13 @@ io.on('connection', (socket) => {
 
     rooms.get(cleanRoom).set(socket.id, client);
 
+    // Envía un mensaje de bienvenida al cliente que se unió, y notifica a los demás clientes de la sala.
     socket.emit('welcome', { roomCode: cleanRoom, client });
     broadcastSystem(cleanRoom, `${client.name} entró a la sala.`);
     broadcastPresence(cleanRoom);
   });
 
+  // Se invoca cuando un cliente envía un mensaje de chat.
   socket.on('chat', (data) => {
     const roomCode = socket.data.roomCode;
     const client = socket.data.client;
@@ -88,6 +92,36 @@ io.on('connection', (socket) => {
     });
   });
 
+  // Se invoca cuando un cliente voluntariamente sale de la sala.
+  socket.on('leave', () => {
+    const roomCode = socket.data.roomCode;
+    const client = socket.data.client;
+
+    if (!roomCode || !client) {
+      return;
+    }
+
+    socket.leave(roomCode);
+
+    const room = rooms.get(roomCode);
+
+    if (room) {
+      room.delete(socket.id);
+
+      if (room.size === 0) {
+        rooms.delete(roomCode);
+      } else {
+        broadcastSystem(roomCode, `${client.name} salió de la sala.`);
+        broadcastPresence(roomCode);
+      }
+    }
+
+    socket.data.roomCode = null;
+    socket.data.client = null;
+    socket.emit('left');
+  });
+
+  // Se invoca cuando un cliente se desconecta. Notifica a los demás clientes de la sala.
   socket.on('disconnect', () => {
     const roomCode = socket.data.roomCode;
     const client = socket.data.client;
@@ -115,6 +149,7 @@ server.listen(PORT, () => {
   console.log(`Servidor listo en http://localhost:${PORT}`);
 });
 
+// Envía un mensaje del sistema a todos los clientes de una sala (por ejemplo, para notificar que un cliente entró o salió).
 function broadcastSystem(roomCode, text) {
   io.to(roomCode).emit('system', {
     text,
@@ -122,6 +157,7 @@ function broadcastSystem(roomCode, text) {
   });
 }
 
+// Envía un mensaje de presencia a todos los clientes de una sala para notificar cuántos clientes hay conectados y quiénes son.
 function broadcastPresence(roomCode) {
   const room = rooms.get(roomCode);
 
@@ -136,6 +172,7 @@ function broadcastPresence(roomCode) {
   });
 }
 
+// Sanitiza el código de sala ingresado por el usuario para evitar caracteres no válidos y limitar su longitud.
 function sanitizeRoomCode(value) {
   return String(value || '')
     .trim()
@@ -144,6 +181,7 @@ function sanitizeRoomCode(value) {
     .slice(0, 20);
 }
 
+// Sanitiza el nombre de usuario ingresado por el cliente para evitar caracteres no válidos y limitar su longitud.
 function sanitizeUserName(value) {
   return String(value || '')
     .trim()

@@ -74,6 +74,28 @@ p,
   gap: 4px;
 }
 
+.chat__info-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-leave {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #dc2626;
+  color: white;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-leave:hover {
+  background: #b91c1c;
+}
+
 #roomName {
   font-size: 0.9rem;
 }

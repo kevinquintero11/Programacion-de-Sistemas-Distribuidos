@@ -12,10 +12,12 @@ const messagesElement = document.querySelector('#messages');
 const messageForm = document.querySelector('#messageForm');
 const messageInput = document.querySelector('#messageInput');
 const sendButton = document.querySelector('#sendButton');
+const leaveButton = document.querySelector('#leaveButton');
 
 let currentClient = null;
 let socket = null;
 
+// Se invoca cuando se toca el botón "Entrar" para unirse a una sala de chat.
 joinForm.addEventListener('submit', (event) => {
   event.preventDefault();
 
@@ -29,6 +31,7 @@ joinForm.addEventListener('submit', (event) => {
   });
 });
 
+// Se invoca cuando se toca el botón "Enviar" para enviar un mensaje de chat.
 messageForm.addEventListener('submit', (event) => {
   event.preventDefault();
 
@@ -43,6 +46,17 @@ messageForm.addEventListener('submit', (event) => {
   messageInput.focus();
 });
 
+// Se invoca cuando se toca el botón "Salir" para abandonar la sala.
+leaveButton.addEventListener('click', () => {
+  if (!socket || !socket.connected) {
+    return;
+  }
+
+  socket.emit('leave');
+  resetUI();
+});
+
+// Conecta con el servidor y se une a la sala especificada por el usuario
 function connectToRoom({ userName, roomCode }) {
   if (!userName || !roomCode) {
     addSystemMessage('Ingresá tu nombre y el código de sala.');
@@ -56,6 +70,7 @@ function connectToRoom({ userName, roomCode }) {
     socket.emit('join', { userName, roomCode });
   });
 
+  // Se invoca cuando el servidor acepta la unión a la sala.
   socket.on('welcome', (data) => {
     currentClient = data.client;
     clientNameElement.textContent = `Sos ${currentClient.name}`;
@@ -69,24 +84,34 @@ function connectToRoom({ userName, roomCode }) {
     messageInput.focus();
   });
 
+  // Se invoca cuando el servidor notifica un cambio en la presencia de la sala (un cliente entró o salió). 
   socket.on('presence', (data) => {
     presenceElement.textContent = `${data.count} cliente${data.count === 1 ? '' : 's'} conectado${data.count === 1 ? '' : 's'}`;
     renderUsers(data.clients);
   });
 
+  // Se invoca cuando el servidor envía un mensaje de chat (puede ser un mensaje propio o de otro cliente).
   socket.on('chat', (data) => {
     addChatMessage(data);
   });
 
+  // Se invoca cuando el servidor envía un mensaje del sistema (por ejemplo, para notificar que un cliente entró o salió de la sala).
   socket.on('system', (data) => {
     addSystemMessage(data.text);
   });
 
+  // Se invoca cuando el servidor notifica un error (por ejemplo, si no se pudo unir a la sala).
   socket.on('error', (data) => {
     addSystemMessage(data.text);
     resetConnectionAfterFailedJoin();
   });
 
+  // Se invoca cuando el servidor notifica que el cliente salió de la sala.
+  socket.on('left', () => {
+    resetUI();
+  });
+
+  // Se invoca cuando se pierde la conexión con el servidor.
   socket.on('disconnect', () => {
     setStatus('Desconectado', 'closed');
     messageInput.disabled = true;
@@ -94,6 +119,7 @@ function connectToRoom({ userName, roomCode }) {
   });
 }
 
+// Agrega un mensaje de chat al panel de mensajes.
 function addChatMessage(message) {
   const isOwnMessage = currentClient?.id === message.client.id;
   const messageElement = document.createElement('article');
@@ -111,6 +137,7 @@ function addChatMessage(message) {
   messagesElement.scrollTop = messagesElement.scrollHeight;
 }
 
+// Agrega un mensaje del sistema al panel de mensajes.
 function addSystemMessage(text) {
   const messageElement = document.createElement('article');
   messageElement.className = 'message message--system';
@@ -119,11 +146,13 @@ function addSystemMessage(text) {
   messagesElement.scrollTop = messagesElement.scrollHeight;
 }
 
+// Actualiza el estado de la conexión (por ejemplo, "Conectando...", "Conectado", "Desconectado").
 function setStatus(text, modifier) {
   statusElement.textContent = text;
   statusElement.className = `status status--${modifier}`;
 }
 
+// Restablece el estado de la interfaz después de un error al intentar unirse a una sala (por ejemplo, si el código de sala no existe).
 function resetConnectionAfterFailedJoin() {
   if (currentClient) {
     return;
@@ -137,6 +166,25 @@ function resetConnectionAfterFailedJoin() {
   }
 }
 
+// Restablece la interfaz al estado inicial para poder ingresar a otra sala.
+function resetUI() {
+  currentClient = null;
+
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+
+  joinForm.hidden = false;
+  chatInfoElement.hidden = true;
+  usersPanelElement.hidden = true;
+  messageInput.disabled = true;
+  sendButton.disabled = true;
+  messageInput.value = '';
+  setStatus('Conectando...', 'connecting');
+}
+
+// Renderiza la lista de usuarios conectados a la sala.
 function renderUsers(clients) {
   usersListElement.replaceChildren(
     ...clients.map((client) => {
@@ -147,6 +195,7 @@ function renderUsers(clients) {
   );
 }
 
+// Formatea una fecha/hora para mostrarla junto a cada mensaje de chat.
 function formatTime(value) {
   return new Intl.DateTimeFormat('es-AR', {
     hour: '2-digit',
