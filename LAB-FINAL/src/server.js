@@ -1,202 +1,179 @@
 const http = require('http');
-const path = require('path');
-const fs = require('fs');
-const { Server } = require('socket.io');
+const ruta = require('path');
+const sistemaArchivos = require('fs');
+const { Server: ServidorSocket } = require('socket.io');
 
-const PORT = process.env.PORT || 3000;
-const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+const PUERTO = process.env.PORT || 3000;
+const DIRECTORIO_PUBLICO = ruta.join(__dirname, '..', 'public');
 
-const server = http.createServer((req, res) => {
-  const requestedUrl = new URL(req.url, `http://${req.headers.host}`);
-  const requestedPath = requestedUrl.pathname === '/' ? '/index.html' : requestedUrl.pathname;
-  const filePath = path.normalize(path.join(PUBLIC_DIR, requestedPath));
-  const publicRoot = `${PUBLIC_DIR}${path.sep}`;
+const servidorHttp = http.createServer((solicitud, respuesta) => {
+  const urlSolicitada = new URL(solicitud.url, `http://${solicitud.headers.host}`);
+  const rutaSolicitada = urlSolicitada.pathname === '/' ? '/index.html' : urlSolicitada.pathname;
+  const rutaArchivo = ruta.normalize(ruta.join(DIRECTORIO_PUBLICO, rutaSolicitada));
+  const raizPublica = `${DIRECTORIO_PUBLICO}${ruta.sep}`;
 
-  if (filePath !== PUBLIC_DIR && !filePath.startsWith(publicRoot)) {
-    res.writeHead(403);
-    res.end('Forbidden');
+  if (rutaArchivo !== DIRECTORIO_PUBLICO && !rutaArchivo.startsWith(raizPublica)) {
+    respuesta.writeHead(403);
+    respuesta.end('Forbidden');
     return;
   }
 
-  fs.readFile(filePath, (error, content) => {
+  sistemaArchivos.readFile(rutaArchivo, (error, contenido) => {
     if (error) {
-      res.writeHead(404);
-      res.end('Not found');
+      respuesta.writeHead(404);
+      respuesta.end('Not found');
       return;
     }
 
-    res.writeHead(200, { 'Content-Type': getContentType(filePath) });
-    res.end(content);
+    respuesta.writeHead(200, { 'Content-Type': obtenerTipoContenido(rutaArchivo) });
+    respuesta.end(contenido);
   });
 });
 
-const io = new Server(server); // Crea un servidor de WebSocket utilizando Socket.IO
-const rooms = new Map();
-const MAX_MESSAGE_LENGTH = 500;
-let nextClientId = 1;
+const servidorSocket = new ServidorSocket(servidorHttp); // Crea un servidor de WebSocket utilizando Socket.IO
+const salas = new Map();
+const MAXIMA_LONGITUD_MENSAJE = 500;
+let proximoIdCliente = 1;
 
 // Maneja las conexiones de los clientes a través de Socket.IO
-io.on('connection', (socket) => {
+servidorSocket.on('connection', (conexionCliente) => {
   // Se invoca cuando un cliente intenta unirse a una sala de chat.
-  socket.on('join', ({ userName, roomCode }) => {
-    const cleanRoom = sanitizeRoomCode(roomCode);
-    const cleanName = sanitizeUserName(userName);
-
-    if (!cleanRoom || !cleanName) {
-      socket.emit('error', { text: 'Ingresá un código de sala y un nombre válidos.' });
-      return;
-    }
-
-    const client = {
-      id: nextClientId,
-      name: cleanName,
+  conexionCliente.on('join', ({ nombreUsuario, codigoSala }) => {
+    
+    const cliente = {
+      id: proximoIdCliente,
+      nombre: nombreUsuario,
     };
 
-    nextClientId += 1;
+    proximoIdCliente += 1;
 
-    socket.join(cleanRoom);
-    socket.data.roomCode = cleanRoom;
-    socket.data.client = client;
+    conexionCliente.join(codigoSala);
+    conexionCliente.data.codigoSala = codigoSala;
+    conexionCliente.data.cliente = cliente;
 
-    if (!rooms.has(cleanRoom)) {
-      rooms.set(cleanRoom, new Map());
+    if (!salas.has(codigoSala)) {
+      salas.set(codigoSala, new Map());
     }
 
-    rooms.get(cleanRoom).set(socket.id, client);
+    salas.get(codigoSala).set(conexionCliente.id, cliente);
 
     // Envía un mensaje de bienvenida al cliente que se unió, y notifica a los demás clientes de la sala.
-    socket.emit('welcome', { roomCode: cleanRoom, client });
-    broadcastSystem(cleanRoom, `${client.name} entró a la sala.`);
-    broadcastPresence(cleanRoom);
+    conexionCliente.emit('welcome', { codigoSala: codigoSala, cliente });
+    broadcastSistema(codigoSala, `${cliente.nombre} entró a la sala.`);
+    broadcastCantUsuarios(codigoSala);
   });
 
   // Se invoca cuando un cliente envía un mensaje de chat.
-  socket.on('chat', (data) => {
-    const roomCode = socket.data.roomCode;
-    const client = socket.data.client;
+  conexionCliente.on('chat', (datos) => {
+    const codigoSala = conexionCliente.data.codigoSala;
+    const cliente = conexionCliente.data.cliente;
 
-    if (!roomCode || !client) {
+    if (!codigoSala || !cliente) {
       return;
     }
 
-    const text = String(data.text || '').trim().slice(0, MAX_MESSAGE_LENGTH);
+    const texto = String(datos.texto || '').trim().slice(0, MAXIMA_LONGITUD_MENSAJE);
 
-    if (!text) {
+    if (!texto) {
       return;
     }
 
-    io.to(roomCode).emit('chat', {
-      client,
-      text,
-      sentAt: new Date().toISOString(),
+    servidorSocket.to(codigoSala).emit('chat', {
+      cliente,
+      texto,
+      enviadoEn: new Date().toISOString(),
     });
   });
 
   // Se invoca cuando un cliente voluntariamente sale de la sala.
-  socket.on('leave', () => {
-    const roomCode = socket.data.roomCode;
-    const client = socket.data.client;
+  conexionCliente.on('leave', () => {
+    const codigoSala = conexionCliente.data.codigoSala;
+    const cliente = conexionCliente.data.cliente;
 
-    if (!roomCode || !client) {
+    if (!codigoSala || !cliente) {
       return;
     }
 
-    socket.leave(roomCode);
+    conexionCliente.leave(codigoSala);
 
-    const room = rooms.get(roomCode);
+    const sala = salas.get(codigoSala);
 
-    if (room) {
-      room.delete(socket.id);
+    if (sala) {
+      sala.delete(conexionCliente.id);
 
-      if (room.size === 0) {
-        rooms.delete(roomCode);
+      if (sala.size === 0) {
+        salas.delete(codigoSala);
       } else {
-        broadcastSystem(roomCode, `${client.name} salió de la sala.`);
-        broadcastPresence(roomCode);
+        broadcastSistema(codigoSala, `${cliente.nombre} salió de la sala.`);
+        broadcastCantUsuarios(codigoSala);
       }
     }
 
-    socket.data.roomCode = null;
-    socket.data.client = null;
-    socket.emit('left');
+    conexionCliente.data.codigoSala = null;
+    conexionCliente.data.cliente = null;
+    conexionCliente.emit('left');
   });
 
   // Se invoca cuando un cliente se desconecta. Notifica a los demás clientes de la sala.
-  socket.on('disconnect', () => {
-    const roomCode = socket.data.roomCode;
-    const client = socket.data.client;
+  conexionCliente.on('disconnect', () => {
+    const codigoSala = conexionCliente.data.codigoSala;
+    const cliente = conexionCliente.data.cliente;
 
-    if (!roomCode || !client) {
+    if (!codigoSala || !cliente) {
       return;
     }
 
-    const room = rooms.get(roomCode);
+    const sala = salas.get(codigoSala);
 
-    if (room) {
-      room.delete(socket.id);
+    if (sala) {
+      sala.delete(conexionCliente.id);
 
-      if (room.size === 0) {
-        rooms.delete(roomCode);
+      if (sala.size === 0) {
+        salas.delete(codigoSala);
       } else {
-        broadcastSystem(roomCode, `${client.name} salió de la sala.`);
-        broadcastPresence(roomCode);
+        broadcastSistema(codigoSala, `${cliente.nombre} salió de la sala.`);
+        broadcastCantUsuarios(codigoSala);
       }
     }
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Servidor listo en http://localhost:${PORT}`);
+servidorHttp.listen(PUERTO, () => {
+  console.log(`Servidor listo en http://localhost:${PUERTO}`);
 });
 
 // Envía un mensaje del sistema a todos los clientes de una sala (por ejemplo, para notificar que un cliente entró o salió).
-function broadcastSystem(roomCode, text) {
-  io.to(roomCode).emit('system', {
-    text,
-    sentAt: new Date().toISOString(),
+function broadcastSistema(codigoSala, texto) {
+  servidorSocket.to(codigoSala).emit('system', {
+    texto,
+    enviadoEn: new Date().toISOString(),
   });
 }
 
 // Envía un mensaje de presencia a todos los clientes de una sala para notificar cuántos clientes hay conectados y quiénes son.
-function broadcastPresence(roomCode) {
-  const room = rooms.get(roomCode);
+function broadcastCantUsuarios(codigoSala) {
+  const sala = salas.get(codigoSala);
 
-  if (!room) {
+  if (!sala) {
     return;
   }
 
-  io.to(roomCode).emit('presence', {
-    roomCode,
-    count: room.size,
-    clients: [...room.values()],
+  servidorSocket.to(codigoSala).emit('presence', {
+    codigoSala,
+    cantidad: sala.size,
+    clientes: [...sala.values()],
   });
 }
 
-// Sanitiza el código de sala ingresado por el usuario para evitar caracteres no válidos y limitar su longitud.
-function sanitizeRoomCode(value) {
-  return String(value || '')
-    .trim()
-    .toUpperCase()
-    .replace(/[^A-Z0-9-]/g, '')
-    .slice(0, 20);
-}
 
-// Sanitiza el nombre de usuario ingresado por el cliente para evitar caracteres no válidos y limitar su longitud.
-function sanitizeUserName(value) {
-  return String(value || '')
-    .trim()
-    .replace(/\s+/g, ' ')
-    .slice(0, 30);
-}
+function obtenerTipoContenido(rutaArchivo) {
+  const extension = ruta.extname(rutaArchivo);
 
-function getContentType(filePath) {
-  const extension = path.extname(filePath);
-
-  const types = {
+  const tipos = {
     '.html': 'text/html; charset=utf-8',
     '.css': 'text/css; charset=utf-8',
     '.js': 'application/javascript; charset=utf-8',
   };
 
-  return types[extension] || 'application/octet-stream';
+  return tipos[extension] || 'application/octet-stream';
 }
