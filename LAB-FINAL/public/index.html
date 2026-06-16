@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat WebSocket</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="chat">
+      <header class="chat__header">
+        <div>
+          <h1>Chat WebSocket</h1>
+          <p>Comunicación bidireccional servidor-cliente sin refrescar la página.</p>
+        </div>
+        <span id="status" class="status status--connecting">Conectando...</span>
+      </header>
+
+      <form id="joinForm" class="join-form">
+        <label>
+          Tu nombre
+          <input id="userNameInput" type="text" placeholder="Ej: Ana" maxlength="30" required />
+        </label>
+        <label>
+          Código de sala
+          <input id="roomCodeInput" type="text" placeholder="Ej: AULA-1" maxlength="20" required />
+        </label>
+        <button type="submit">Entrar</button>
+      </form>
+
+      <section class="chat__info" hidden>
+        <div>
+          <strong id="clientName">Esperando conexión</strong>
+          <span id="roomName"></span>
+        </div>
+        <span id="presence">0 clientes conectados</span>
+      </section>
+
+      <aside id="usersPanel" class="users-panel" hidden>
+        <h2>Usuarios en la sala</h2>
+        <ul id="usersList"></ul>
+      </aside>
+
+      <section id="messages" class="messages" aria-live="polite"></section>
+
+      <form id="messageForm" class="message-form">
+        <input
+          id="messageInput"
+          type="text"
+          placeholder="Escribí un mensaje..."
+          autocomplete="off"
+          maxlength="500"
+          disabled
+          required
+        />
+        <button id="sendButton" type="submit" disabled>Enviar</button>
+      </form>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
