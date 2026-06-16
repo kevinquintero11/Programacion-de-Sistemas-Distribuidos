@@ -181,7 +181,7 @@ function restablecerInterfaz() {
   entradaMensaje.disabled = true;
   botonEnviar.disabled = true;
   entradaMensaje.value = '';
-  actualizarEstado('Conectando...', 'connecting');
+  actualizarEstado('Desconectado', 'closed');
 }
 
 // Renderiza la lista de usuarios conectados a la sala.
