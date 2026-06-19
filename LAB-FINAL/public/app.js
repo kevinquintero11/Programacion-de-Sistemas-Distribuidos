@@ -73,7 +73,6 @@ function conectarASala({ nombreUsuario, codigoSala }) {
   // Se invoca cuando el servidor acepta la unión a la sala.
   conexionSocket.on('welcome', (datos) => {
     clienteActual = datos.cliente;
-    elementoNombreCliente.textContent = `Sos ${clienteActual.nombre}`;
     elementoNombreSala.textContent = `Sala ${datos.codigoSala}`;
     formularioIngreso.hidden = true;
     elementoInfoChat.hidden = false;
