@@ -181,6 +181,7 @@ function restablecerInterfaz() {
   entradaMensaje.disabled = true;
   botonEnviar.disabled = true;
   entradaMensaje.value = '';
+  elementoMensajes.replaceChildren();
   actualizarEstado('Desconectado', 'closed');
 }
 
